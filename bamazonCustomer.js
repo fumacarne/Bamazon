@@ -1,5 +1,7 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var product={};
+var lente;
 var db = mysql.createConnection({
   host: "localhost",
 
@@ -21,6 +23,7 @@ db.connect();
 
     db.query('SELECT * FROM products',function(err,results,fields){
         if (err) throw err;
+        lente=results.length;
           console.log("|id ||PRODUCT||    DEPARTMENT   || PRICE  || STOCK ||||")
         for (i=0;i<results.length;i++){
            
@@ -59,36 +62,76 @@ message:"Please enter the 'id' of the item you want to purchase"
 },
 ])
     .then(function(ans){
-
-
-        db.query('SELECT * FROM products',function(err,results,fields){
+        product=ans.q2;
+        db.query('SELECT * FROM products WHERE ?',{
+        id:ans.q2
+        },
+        
+        function(err,results){
             if (err) throw err;
-
-            for (i=0;i<results.length;i++){
-            if (ans!== results[i].id){
-                console.log("No such item for purchase! Please check the id again")
-
+            if (ans.q2>lente) {console.log("No such item ");buy();}
+            else {console.log("You have selected this product")
+        console.log(results);
+         stock()}
+       
+    
+       }       )     }   )}
+            
             
 
-        }
+            // var value = (results[product-1].id)
+            // console.log(value)
+           
 
-        }
+            // if(parseInt(product)===parseInt(value)){
+            //     stock()
+            // } else {
+            //     console.log("Item not found")
+               
 
-    })
+            // }})
 
-function stock(q){
+           
+           
+    //         for (i=0;i<results.length;i++){
+    //         if (ans.q2>[i].id){
+    //             console.log("No such item for purchase! Please check the id again");
+    //             process.exit()
+    //     }  else {
+    //         stock()
+    //     }
+    // }})
+    
+
+
+
+function stock(){
 inquirer.prompt([{name:"q3",
 type:"input",
 message:"how many of this items do you wanna buy?"}])
-}
 
+.then(function(ans){
+    var st=ans.q3;
+    db.query('UPDATE products SET stock ? WHERE id ?' ,{
+        id:product,
+        stock:parseInt(ans.q3),
+        
+    }
+
+    
+        
+        ,function(err,results){
+        if (err) throw err;
+
+        console.log("Thanks for your purchase!" ,results)
+        db.end()
+    })})}
 
 
     
-    db.end()
+   
   
 
 
 
-
-})}
+    
