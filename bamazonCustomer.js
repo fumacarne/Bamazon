@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var inquirer = require('inquirer');
 var product={};
 var lente;
+var current_stock;
 var db = mysql.createConnection({
   host: "localhost",
 
@@ -72,38 +73,16 @@ message:"Please enter the 'id' of the item you want to purchase"
             if (ans.q2>lente) {console.log("No such item ");buy();}
             else {console.log("You have selected this product")
         console.log(results);
-         stock()}
+        current_stock= results[0].stock_quantity;
+
+        if (current_stock<=0){console.log("no stock"); proccess.exit()}
+        else{
+         stock()}}
        
     
        }       )     }   )}
             
             
-
-            // var value = (results[product-1].id)
-            // console.log(value)
-           
-
-            // if(parseInt(product)===parseInt(value)){
-            //     stock()
-            // } else {
-            //     console.log("Item not found")
-               
-
-            // }})
-
-           
-           
-    //         for (i=0;i<results.length;i++){
-    //         if (ans.q2>[i].id){
-    //             console.log("No such item for purchase! Please check the id again");
-    //             process.exit()
-    //     }  else {
-    //         stock()
-    //     }
-    // }})
-    
-
-
 
 function stock(){
 inquirer.prompt([{name:"q3",
@@ -112,23 +91,33 @@ message:"how many of this items do you wanna buy?"}])
 
 .then(function(ans){
     var st=ans.q3;
-    db.query('UPDATE products SET stock ? WHERE id ?' ,{
-        id:product,
-        stock:parseInt(ans.q3),
-        
-    }
+    var dif = current_stock - parseInt(ans.q3);
 
+    console.log(dif)
+    db.query("UPDATE products SET ? WHERE ?",
+
+       [ 
+        {stock_quantity:dif},
+        {id:product}
+        
+
+       ]
+    
     
         
         ,function(err,results){
         if (err) throw err;
 
-        console.log("Thanks for your purchase!" ,results)
+        console.log("Thanks for your purchase!")
         db.end()
-    })})}
+    }
+    )
 
 
-    
+}
+)
+
+}
    
   
 
