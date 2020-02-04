@@ -3,6 +3,7 @@ var inquirer = require('inquirer');
 var product={};
 var lente;
 var current_stock;
+var charge;
 var db = mysql.createConnection({
   host: "localhost",
 
@@ -74,8 +75,9 @@ message:"Please enter the 'id' of the item you want to purchase"
             else {console.log("You have selected this product")
         console.log(results);
         current_stock= results[0].stock_quantity;
+        charge=results[0].price
 
-        if (current_stock<=0){console.log("no stock"); proccess.exit()}
+        if (current_stock<=0){console.log("no stock"); process.exit()}
         else{
          stock()}}
        
@@ -92,8 +94,9 @@ message:"how many of this items do you wanna buy?"}])
 .then(function(ans){
     var st=ans.q3;
     var dif = current_stock - parseInt(ans.q3);
+    if (dif<0){console.log("There is no stock for this product"); process.exit()}
 
-    console.log(dif)
+    console.log(charge *st +" USD has been charged from you Credit Card")
     db.query("UPDATE products SET ? WHERE ?",
 
        [ 
